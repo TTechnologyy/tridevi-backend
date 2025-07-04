@@ -60,9 +60,9 @@ New Lead Details:
   }
 });
 
-const PORT = 5050;
+const PORT = process.env.PORT || 5050;
 connectDB().then(() => {
-  app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+  app.listen(PORT, () => console.log(`🚀 Server running on http://0.0.0.0:${PORT}`));
 }).catch((err) => {
   console.error('❌ Failed to connect to MongoDB:', err);
 });
