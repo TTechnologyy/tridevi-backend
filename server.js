@@ -10,6 +10,7 @@ app.use(express.json());
 
 // ✅ Root route to confirm backend is live
 app.get('/', (req, res) => {
+  console.log('🌐 Received GET /');
   res.send('<h2>🎉 Tridevi Backend is Live!</h2>');
 });
 
