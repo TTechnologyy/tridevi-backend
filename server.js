@@ -5,13 +5,15 @@ const connectDB = require('./db/connect');
 const Contact = require('./models/Contact');
 
 const app = express();
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 
+// ✅ Root route to confirm backend is live
 app.get('/', (req, res) => {
-  res.send('🎉 It works!');
+  res.send('<h2>🎉 Tridevi Backend is Live!</h2>');
 });
 
+// ✅ Contact form POST route
 app.post('/api/contact', async (req, res) => {
   const { name, email, phone, website, service, budget, message } = req.body;
 
@@ -60,6 +62,7 @@ New Lead Details:
 
 const PORT = process.env.PORT || 5050;
 
+// ✅ Start Express first, then connect Mongo
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
   connectDB()
