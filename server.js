@@ -4,6 +4,8 @@ const nodemailer = require('nodemailer');
 const connectDB = require('./db/connect');
 const Contact = require('./models/Contact'); // ← ADD THIS LINE
 
+const express = require('express');
+
 const app = express();
 app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.json());
