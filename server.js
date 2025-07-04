@@ -2,9 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
 const connectDB = require('./db/connect');
-const Contact = require('./models/Contact'); // ← ADD THIS LINE
-
-const express = require('express');
+const Contact = require('./models/Contact');
 
 const app = express();
 app.use(cors({ origin: 'http://localhost:3000' }));
@@ -21,12 +19,10 @@ app.post('/api/contact', async (req, res) => {
   console.log('📨 Request Body:', req.body);
 
   try {
-    // Save to MongoDB
     const newContact = new Contact({ name, email, phone, website, service, budget, message });
     await newContact.save();
     console.log('✅ Contact saved to MongoDB');
 
-    // Send Email
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -64,7 +60,9 @@ New Lead Details:
 
 const PORT = process.env.PORT || 5050;
 connectDB().then(() => {
-  app.listen(PORT, () => console.log(`🚀 Server running on http://0.0.0.0:${PORT}`));
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
+  });
 }).catch((err) => {
   console.error('❌ Failed to connect to MongoDB:', err);
 });
