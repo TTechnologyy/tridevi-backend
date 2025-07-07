@@ -1,3 +1,5 @@
+require('dotenv').config(); // ✅ Load environment variables
+
 const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
@@ -29,14 +31,14 @@ app.post('/api/contact', async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'tridevitechnology@gmail.com',
-        pass: 'atjcdijdfwoyzkxl',
+        user: process.env.EMAIL_USER, // from .env
+        pass: process.env.EMAIL_PASS, // from .env
       },
     });
 
     const mailOptions = {
       from: email,
-      to: 'tridevitechnology@gmail.com',
+      to: process.env.EMAIL_USER,
       subject: '📥 New Lead - TrideviTech Form Submission',
       text: `
 New Lead Details:
