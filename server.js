@@ -10,13 +10,17 @@ const app = express();
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
-// Root route
+// ✅ Health check and root route
 app.get('/', (req, res) => {
   console.log('🌐 Received GET /');
   res.send('<h2>🎉 Tridevi Backend is Live!</h2>');
 });
 
-// Contact POST route
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
+// ✅ Contact form POST route
 app.post('/api/contact', async (req, res) => {
   const { name, email, phone, website, service, budget, message } = req.body;
 
@@ -28,7 +32,7 @@ app.post('/api/contact', async (req, res) => {
       service: 'gmail',
       auth: {
         user: 'tridevitechnology@gmail.com',
-        pass: process.env.EMAIL_PASS, // move password to .env
+        pass: process.env.EMAIL_PASS, // ⛔️ Never hardcode passwords
       },
     });
 
@@ -58,10 +62,10 @@ New Lead Details:
   }
 });
 
-const PORT = process.env.PORT;
-
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+// ✅ Proper port binding for Render
+const PORT = parseInt(process.env.PORT, 10) || 5050;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
   connectDB()
     .then(() => console.log('✅ MongoDB connected successfully'))
     .catch((err) => console.error('❌ MongoDB connection failed:', err));
