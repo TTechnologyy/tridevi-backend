@@ -63,7 +63,7 @@ New Lead Details:
   }
 });
 
-const PORT = process.env.PORT || 5050;
+const PORT = process.env.PORT;
 
 // ✅ Start Express first, then connect Mongo
 app.listen(PORT, '0.0.0.0', () => {
