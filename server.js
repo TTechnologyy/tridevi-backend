@@ -8,20 +8,39 @@ const Contact = require('./models/Contact');
 
 const app = express();
 
-// ✅ Allow only specific frontend domain
+// ✅ CORS Configuration
+
 const corsOptions = {
-  origin: ['https://tridevi-frontend.vercel.app/'], // ✅ replace with your actual frontend domain
+  origin: [
+    'https://tridevi-frontend.vercel.app',
+    'http://localhost:3000'
+  ],
   methods: ['GET', 'POST'],
-  credentials: true,
+  allowedHeaders: ['Content-Type'],
 };
 
+app.use(cors(corsOptions));
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://tridevi-frontend.vercel.app'
+];
+
 app.use(cors({
-  origin: ['https://tridevi-frontend.vercel.app/'],
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed from this origin'));
+    }
+  },
   methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
+  credentials: true,
 }));
+
 app.use(express.json());
 
-// ✅ Health Check
+// ✅ Health check
 app.get('/', (req, res) => {
   console.log('🌐 Received GET /');
   res.send('<h2>🎉 Tridevi Backend is Live!</h2>');
@@ -69,16 +88,19 @@ New Lead Details:
     res.status(200).json({ success: true, message: 'Form submitted and email sent successfully' });
 
   } catch (error) {
-    console.error('❌ Error in /api/contact:', error);
-    res.status(500).json({ success: false, message: 'Something went wrong.' });
-  }
+  console.error('❌ Error in /api/contact:', error.message, error);
+  res.status(500).json({ success: false, message: error.message });
+}
 });
 
-// ✅ Proper binding for Railway
+// ✅ Start server
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, '0.0.0.0', async () => {
   console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
-  connectDB()
-    .then(() => console.log('✅ MongoDB connected successfully'))
-    .catch((err) => console.error('❌ MongoDB connection failed:', err));
+  try {
+    await connectDB();
+    console.log('✅ MongoDB connected successfully');
+  } catch (err) {
+    console.error('❌ MongoDB connection failed:', err);
+  }
 });
