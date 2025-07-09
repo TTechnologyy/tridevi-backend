@@ -8,27 +8,26 @@ const Contact = require('./models/Contact');
 
 const app = express();
 
-// ✅ CORS Configuration
+// ✅ CORRECT CORS SETUP
 const allowedOrigins = [
   'http://localhost:3000',
   'https://tridevi-frontend.vercel.app'
 ];
 
-const corsOptions = {
+app.use(cors({
   origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps or curl requests)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('CORS not allowed from this origin'));
+      console.log('❌ Blocked CORS from:', origin);
+      callback(new Error('Not allowed by CORS'));
     }
   },
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type'],
   credentials: true,
-};
+}));
 
-app.use(cors(corsOptions));
 app.use(express.json());
 
 // ✅ Health check
@@ -41,7 +40,7 @@ app.get('/health', (req, res) => {
   res.status(200).send('OK');
 });
 
-// ✅ Contact form route
+// ✅ Contact form handler
 app.post('/api/contact', async (req, res) => {
   const { name, email, phone, website, service, budget, message } = req.body;
 
@@ -75,12 +74,12 @@ New Lead Details:
     };
 
     await transporter.sendMail(mailOptions);
-    console.log('✅ Email sent successfully');
+    console.log('✅ Email sent');
     res.status(200).json({ success: true, message: 'Form submitted and email sent successfully' });
 
   } catch (error) {
-    console.error('❌ Error in /api/contact:', error.message, error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error('❌ Submission Error:', error);
+    res.status(500).json({ success: false, message: 'Something went wrong' });
   }
 });
 
@@ -90,8 +89,8 @@ app.listen(PORT, '0.0.0.0', async () => {
   console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
   try {
     await connectDB();
-    console.log('✅ MongoDB connected successfully');
+    console.log('✅ MongoDB connected');
   } catch (err) {
-    console.error('❌ MongoDB connection failed:', err);
+    console.error('❌ DB connection failed:', err);
   }
 });
