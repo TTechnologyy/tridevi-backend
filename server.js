@@ -32,7 +32,7 @@ app.post('/api/contact', async (req, res) => {
       service: 'gmail',
       auth: {
         user: 'tridevitechnology@gmail.com',
-        pass: process.env.EMAIL_PASS, // ⛔️ Never hardcode passwords
+        pass: process.env.EMAIL_PASS, // ✅ Loaded from .env
       },
     });
 
@@ -62,8 +62,9 @@ New Lead Details:
   }
 });
 
-// ✅ Proper port binding for Render
-const PORT = parseInt(process.env.PORT, 10) || 5050;
+// ✅ Bind only to the port provided by Render (no fallback)
+const PORT = process.env.PORT || 8080;
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
   connectDB()
