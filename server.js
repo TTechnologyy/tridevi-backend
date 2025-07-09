@@ -7,10 +7,21 @@ const connectDB = require('./db/connect');
 const Contact = require('./models/Contact');
 
 const app = express();
-app.use(cors({ origin: '*' }));
+
+// ✅ Allow only specific frontend domain
+const corsOptions = {
+  origin: ['https://tridevi-frontend.vercel.app/'], // ✅ replace with your actual frontend domain
+  methods: ['GET', 'POST'],
+  credentials: true,
+};
+
+app.use(cors({
+  origin: ['https://your-vercel-domain.vercel.app'],
+  methods: ['GET', 'POST'],
+}));
 app.use(express.json());
 
-// ✅ Health check and root route
+// ✅ Health Check
 app.get('/', (req, res) => {
   console.log('🌐 Received GET /');
   res.send('<h2>🎉 Tridevi Backend is Live!</h2>');
@@ -20,7 +31,7 @@ app.get('/health', (req, res) => {
   res.status(200).send('OK');
 });
 
-// ✅ Contact form POST route
+// ✅ Contact form route
 app.post('/api/contact', async (req, res) => {
   const { name, email, phone, website, service, budget, message } = req.body;
 
@@ -32,12 +43,12 @@ app.post('/api/contact', async (req, res) => {
       service: 'gmail',
       auth: {
         user: 'tridevitechnology@gmail.com',
-        pass: process.env.EMAIL_PASS, // ✅ Loaded from .env
+        pass: process.env.EMAIL_PASS,
       },
     });
 
     const mailOptions = {
-      from: email,
+      from: `"TrideviTech Lead" <tridevitechnology@gmail.com>`,
       to: 'tridevitechnology@gmail.com',
       subject: '📥 New Lead - TrideviTech Form Submission',
       text: `
@@ -54,17 +65,17 @@ New Lead Details:
     };
 
     await transporter.sendMail(mailOptions);
+    console.log('✅ Email sent successfully');
     res.status(200).json({ success: true, message: 'Form submitted and email sent successfully' });
 
   } catch (error) {
-    console.error('❌ Error in contact submission:', error);
+    console.error('❌ Error in /api/contact:', error);
     res.status(500).json({ success: false, message: 'Something went wrong.' });
   }
 });
 
-// ✅ Bind only to the port provided by Render (no fallback)
+// ✅ Proper binding for Railway
 const PORT = process.env.PORT || 8080;
-
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
   connectDB()
