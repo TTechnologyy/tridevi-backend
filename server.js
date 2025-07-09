@@ -9,24 +9,14 @@ const Contact = require('./models/Contact');
 const app = express();
 
 // ✅ CORS Configuration
-
-const corsOptions = {
-  origin: [
-    'https://tridevi-frontend.vercel.app',
-    'http://localhost:3000'
-  ],
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'],
-};
-
-app.use(cors(corsOptions));
 const allowedOrigins = [
   'http://localhost:3000',
   'https://tridevi-frontend.vercel.app'
 ];
 
-app.use(cors({
+const corsOptions = {
   origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps or curl requests)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -36,8 +26,9 @@ app.use(cors({
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type'],
   credentials: true,
-}));
+};
 
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // ✅ Health check
@@ -88,9 +79,9 @@ New Lead Details:
     res.status(200).json({ success: true, message: 'Form submitted and email sent successfully' });
 
   } catch (error) {
-  console.error('❌ Error in /api/contact:', error.message, error);
-  res.status(500).json({ success: false, message: error.message });
-}
+    console.error('❌ Error in /api/contact:', error.message, error);
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 // ✅ Start server
