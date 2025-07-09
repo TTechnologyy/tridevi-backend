@@ -16,7 +16,7 @@ const corsOptions = {
 };
 
 app.use(cors({
-  origin: ['https://your-vercel-domain.vercel.app'],
+  origin: ['https://tridevi-frontend.vercel.app/'],
   methods: ['GET', 'POST'],
 }));
 app.use(express.json());
