@@ -11,7 +11,9 @@ const app = express();
 // ✅ CORRECT CORS SETUP
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://tridevi-frontend.vercel.app'
+  'https://tridevi-frontend.vercel.app',
+  'https://www.tridevitech.com', 
+  'https://tridevitech.com'
 ];
 
 app.use(cors({
