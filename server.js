@@ -59,7 +59,7 @@ app.post('/api/contact', async (req, res) => {
       port: 465,
       secure: true,
       auth: {
-        user: 'contact@tridevitech.com',
+        user: 'sonu@tridevitech.com',
         pass: process.env.CONTACT_EMAIL_PASS, // Use Zoho app-specific password
       },
     });
