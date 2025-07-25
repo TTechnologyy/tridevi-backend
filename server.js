@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+console.log('🔐 CONTACT_EMAIL_PASS loaded:', process.env.CONTACT_EMAIL_PASS ? '✅ Exists' : '❌ Missing');
+
 const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
@@ -8,11 +10,11 @@ const Contact = require('./models/Contact');
 
 const app = express();
 
-// ✅ CORRECT CORS SETUP
+// ✅ CORS Configuration
 const allowedOrigins = [
   'http://localhost:3000',
   'https://tridevi-frontend.vercel.app',
-  'https://www.tridevitech.com', 
+  'https://www.tridevitech.com',
   'https://tridevitech.com'
 ];
 
@@ -32,7 +34,7 @@ app.use(cors({
 
 app.use(express.json());
 
-// ✅ Health check
+// ✅ Health Check Routes
 app.get('/', (req, res) => {
   console.log('🌐 Received GET /');
   res.send('<h2>🎉 Tridevi Backend is Live!</h2>');
@@ -42,25 +44,30 @@ app.get('/health', (req, res) => {
   res.status(200).send('OK');
 });
 
-// ✅ Contact form handler
+// ✅ Contact Form Handler
 app.post('/api/contact', async (req, res) => {
   const { name, email, phone, website, service, budget, message } = req.body;
 
   try {
+    // Save lead to MongoDB
     const newContact = new Contact({ name, email, phone, website, service, budget, message });
     await newContact.save();
 
+    // ✅ Nodemailer with Zoho SMTP (for professional sending from contact@)
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.zoho.com',
+      port: 465,
+      secure: true,
       auth: {
-        user: 'tridevitechnology@gmail.com',
-        pass: process.env.EMAIL_PASS,
+        user: 'contact@tridevitech.com',
+        pass: process.env.CONTACT_EMAIL_PASS, // Use Zoho app-specific password
       },
     });
 
+    // ✅ Email configuration
     const mailOptions = {
-      from: `"TrideviTech Lead" <tridevitechnology@gmail.com>`,
-      to: 'tridevitechnology@gmail.com',
+      from: `"TrideviTech Lead" <contact@tridevitech.com>`,
+      to: 'contact@tridevitech.com',
       subject: '📥 New Lead - TrideviTech Form Submission',
       text: `
 New Lead Details:
@@ -75,8 +82,10 @@ New Lead Details:
       `,
     };
 
+    // ✅ Send the email
     await transporter.sendMail(mailOptions);
-    console.log('✅ Email sent');
+    console.log('✅ Email sent to contact@tridevitech.com');
+
     res.status(200).json({ success: true, message: 'Form submitted and email sent successfully' });
 
   } catch (error) {
@@ -85,7 +94,7 @@ New Lead Details:
   }
 });
 
-// ✅ Start server
+// ✅ Start Server
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, '0.0.0.0', async () => {
   console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
